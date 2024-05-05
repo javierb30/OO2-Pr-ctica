@@ -31,17 +31,13 @@ public class Mixta extends Topografia{
 				.sum())/4;
 	}
 	
-	//Esta es por si en el Test, envias mensaje de t1 a t2 t2.isEquals(t1)
-	// la que envíe el mensaje siempre  está declarada de tipo Tipografia para lograr
-	// correctamente el polimorfismo
-	
 	public boolean isEquals(Topografia t) {
 		return t.isEquals(this);
 	}
 	
-	
 	public boolean isEquals(Mixta tMixta) {
-		Topografia componente1;
+		return this.componentes.equals(tMixta.getComponentes()); //Esto sería la corrección?
+		/*Topografia componente1;
 		Topografia componente2;
 		for (int i = 0; i < this.getComponentes().size(); i++) {
 			componente1 = this.getComponentes().get(i);
@@ -50,13 +46,9 @@ public class Mixta extends Topografia{
 				return false;
 			}
 		}
-		return true;
+		return true;*/
 	}
-	/* Mirando mi ejemplo en papel
-	1 envía mensaje a 2, 2.isEquals(1), 2 encara por isEquals(Topografia) y esto lleva a que llame a 
-	1 con isEquals -> entonces, 1 encara por isEquals(Mixta) porque ya sabe que el que lo llamó
-	es de tipo Mixta por el "this"... y así con todo todo el tiempo como un ida y vuelta
-	*/
+
 	public boolean isEquals(Agua a) {
 		return false;
 	}
