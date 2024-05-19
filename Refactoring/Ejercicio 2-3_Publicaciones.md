@@ -6,7 +6,7 @@
 
 Si vuelve a encontrar un mal olor, retorne al paso (1). 
 
-![alt text](image.png)
+![alt text](UML/Ejercicio_2-3/image.png)
 
 ```java
 /**
@@ -46,7 +46,7 @@ public List<Post> ultimosPosts(Usuario user, int cantidad) {
 
 3. **Resultado:**
 
-![alt text](1.png)
+![alt text](UML/Ejercicio_2-3/1.png)
 ```java
 /**
 * Retorna los últimos N posts que no pertenecen al usuario user
@@ -179,7 +179,7 @@ public List<Post> obtenerUltimosPosts(List<Post> postsOrdenadosPorFecha, int can
 
 3. **Resultado:**
 
-![alt text](2.png)
+![alt text](UML/Ejercicio_2-3/2.png)
 
 ```java
 public List<Post> ultimosPostsNoPertenecientesAlUsuario(Usuario user, int cantidad) {
@@ -253,4 +253,4 @@ public boolean esPostDeOtroUsuario(usuario user){
     return !this.getUsuario().equals(user)
 }
 ```
-![alt text](3.png)
+![alt text](UML/Ejercicio_2-3/3.png)
