@@ -1,4 +1,4 @@
-### 2.1 Juego
+### 2.2 Juego
 
 1. indique el mal olor,
 2. indique el refactoring que lo corrige, 
