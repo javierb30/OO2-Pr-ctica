@@ -588,7 +588,7 @@
 											"top": 448,
 											"width": 509.35205078125,
 											"height": 13,
-											"text": "«Static»+descuentoJur: Real",
+											"text": "«Static»#descuentoJur: Real",
 											"horizontalAlignment": 0
 										},
 										{
@@ -605,7 +605,7 @@
 											"top": 463,
 											"width": 509.35205078125,
 											"height": 13,
-											"text": "«Static»+descuentoFis Real",
+											"text": "«Static»#descuentoFis Real",
 											"horizontalAlignment": 0
 										}
 									],
@@ -938,7 +938,7 @@
 											"top": 318,
 											"width": 219.8037109375,
 											"height": 13,
-											"text": "-lineas: SortedSet<String>",
+											"text": "-lineas: String[*]",
 											"horizontalAlignment": 0
 										},
 										{
@@ -989,7 +989,7 @@
 											"top": 356,
 											"width": 219.8037109375,
 											"height": 13,
-											"text": "+getLinea(): SortedSet<String>",
+											"text": "+getLinea(): String[*]",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2907,6 +2907,7 @@
 							},
 							"name": "descuentoJur",
 							"stereotype": "Static",
+							"visibility": "protected",
 							"type": "Real"
 						},
 						{
@@ -2916,7 +2917,9 @@
 								"$ref": "AAAAAAGPmzKCQBp/Vt8="
 							},
 							"name": "descuentoFis Real",
-							"stereotype": "Static"
+							"stereotype": "Static",
+							"visibility": "protected",
+							"type": ""
 						}
 					],
 					"operations": [
@@ -3194,7 +3197,8 @@
 							},
 							"name": "lineas",
 							"visibility": "private",
-							"type": "SortedSet<String>"
+							"type": "String",
+							"multiplicity": "*"
 						},
 						{
 							"_type": "UMLAttribute",
@@ -3222,7 +3226,8 @@
 									"_parent": {
 										"$ref": "AAAAAAGPmzsdSCcd33A="
 									},
-									"type": "SortedSet<String>",
+									"type": "String",
+									"multiplicity": "*",
 									"direction": "return"
 								}
 							]

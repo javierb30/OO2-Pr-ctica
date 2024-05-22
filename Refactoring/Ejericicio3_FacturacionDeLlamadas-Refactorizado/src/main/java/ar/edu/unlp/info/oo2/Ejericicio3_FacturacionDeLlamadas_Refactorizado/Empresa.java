@@ -8,13 +8,11 @@ public class Empresa {
 	private List<Llamada> llamadas = new ArrayList<Llamada>();
 	private GestorNumerosDisponibles guia = new GestorNumerosDisponibles();
 
-	final static double descuentoJur = 0.15;
-	final static double descuentoFis = 0;
 
-	public boolean agregarNumeroTelefono(String str) {
-		boolean encontre = guia.getLineas().contains(str);
+	public boolean agregarNumeroTelefono(String numeroTelefono) {
+		boolean encontre = guia.getLineas().contains(numeroTelefono);
 		if (!encontre) {
-			guia.getLineas().add(str);
+			guia.getLineas().add(numeroTelefono);
 			encontre= true;
 			return encontre;
 		}
@@ -28,64 +26,48 @@ public class Empresa {
 		return guia.obtenerNumeroLibre();
 	}
 
-	public Cliente registrarUsuario(String data, String nombre, String tipo) {
-		Cliente var = new Cliente();
-		if (tipo.equals("fisica")) {
-			var.setNombre(nombre);
-			String tel = this.obtenerNumeroLibre();
-			var.setTipo(tipo);
-			var.setNumeroTelefono(tel);
-			var.setDNI(data);
-		}
-		else if (tipo.equals("juridica")) {
-			String tel = this.obtenerNumeroLibre();
-			var.setNombre(nombre);
-			var.setTipo(tipo);
-			var.setNumeroTelefono(tel);
-			var.setCuit(data);
-		}
-		clientes.add(var);
-		return var;
+	public Cliente registrarClienteFisico(String dni, String nombre) {
+        String tel = this.obtenerNumeroLibre();
+        Cliente cliente = new ClienteFisico(nombre,tel,dni);
+        clientes.add(cliente);
+        return cliente;
 	}
+	public Cliente registrarClienteJuridico(String cuit, String nombre) {
+        String tel = this.obtenerNumeroLibre();
+        Cliente cliente = new ClienteJuridico(nombre,tel,cuit);
+        clientes.add(cliente);
+        return cliente;
+    }
 
-	public Llamada registrarLlamada(Cliente origen, Cliente destino, String t, int duracion) {
-		Llamada llamada = new Llamada(t, origen.getNumeroTelefono(), destino.getNumeroTelefono(), duracion);
-		llamadas.add(llamada);
-		origen.llamadas.add(llamada);
-		return llamada;
-	}
+
+	public Llamada registrarLlamadaNacional(Cliente origen, Cliente destino, int duracion) {
+        Llamada llamada = new LlamadaNacional(origen.getNumeroTelefono(), destino.getNumeroTelefono(), duracion);
+        llamadas.add(llamada);
+        origen.agregarLlamada(llamada);
+        return llamada;
+    }
+
+	public Llamada registrarLlamadaInternacional(Cliente origen, Cliente destino,int duracion) {
+        Llamada llamada = new LlamadaInternacional(origen.getNumeroTelefono(), destino.getNumeroTelefono(), duracion);
+        llamadas.add(llamada);
+        origen.agregarLlamada(llamada);
+        return llamada;
+    }
 
 	public double calcularMontoTotalLlamadas(Cliente cliente) {
-		double c = 0;
-		for (Llamada l : cliente.llamadas) {
-			double auxc = 0;
-			if (l.getTipoDeLlamada() == "nacional") {
-				// el precio es de 3 pesos por segundo más IVA sin adicional por establecer la llamada
-				auxc += l.getDuracion() * 3 + (l.getDuracion() * 3 * 0.21);
-			} else if (l.getTipoDeLlamada() == "internacional") {
-				// el precio es de 150 pesos por segundo más IVA más 50 pesos por establecer la llamada
-				auxc += l.getDuracion() * 150 + (l.getDuracion() * 150 * 0.21) + 50;
-			}
-
-			if (cliente.getTipo() == "fisica") {
-				auxc -= auxc*descuentoFis;
-			} else if(cliente.getTipo() == "juridica") {
-				auxc -= auxc*descuentoJur;
-			}
-			c += auxc;
-		}
-		return c;
+		return cliente.calcularMontoTotalLlamadas();
 	}
 
-	public int cantidadDeUsuarios() {
+
+	public int cantidadDeClientes() {
 		return clientes.size();
 	}
 
-	public boolean existeUsuario(Cliente persona) {
-		return clientes.contains(persona);
+	public boolean existeCliente(Cliente cliente) {
+		return clientes.contains(cliente);
 	}
 
-	public GestorNumerosDisponibles getGestorNumeros() {
+	public GestorNumerosDisponibles getGuia() {
 		return this.guia;
 	}
 }

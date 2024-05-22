@@ -33,7 +33,7 @@ public class GestorNumerosDisponibles {
 		return null;
 	}
 
-	public void cambiarTipoGenerador(String valor) {
-		this.tipoGenerador = valor;
+	public void cambiarTipoGenerador(String tipo) {
+		this.tipoGenerador = tipo;
 	}
 }

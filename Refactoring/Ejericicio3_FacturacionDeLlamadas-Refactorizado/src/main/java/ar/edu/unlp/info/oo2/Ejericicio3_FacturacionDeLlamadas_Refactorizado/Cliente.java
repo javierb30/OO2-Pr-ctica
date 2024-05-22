@@ -3,42 +3,42 @@ package ar.edu.unlp.info.oo2.Ejericicio3_FacturacionDeLlamadas_Refactorizado;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Cliente {
-	public List<Llamada> llamadas = new ArrayList<Llamada>();
-	private String tipo;
+public abstract class Cliente {
+	private List<Llamada> llamadas;
 	private String nombre;
 	private String numeroTelefono;
-	private String cuit;
-	private String dni;
-
-	public String getTipo() {
-		return tipo;
-	}
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
+	final static double descuentoJur = 0.15;
+	final static double descuentoFis = 0;
+	
+	public Cliente(String nombre, String numeroTelefono){
+        this.llamadas = new ArrayList<Llamada>(); 
+        this.nombre = nombre;
+        this.numeroTelefono = numeroTelefono;
+    }
+	
+	public List<Llamada> getLlamadas() {
+		return llamadas;
 	}
 	public String getNombre() {
 		return nombre;
 	}
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
 	public String getNumeroTelefono() {
 		return numeroTelefono;
 	}
-	public void setNumeroTelefono(String numeroTelefono) {
-		this.numeroTelefono = numeroTelefono;
-	}
-	public String getCuit() {
-		return cuit;
-	}
-	public void setCuit(String cuit) {
-		this.cuit = cuit;
-	}
-	public String getDNI() {
-		return dni;
-	}
-	public void setDNI(String dni) {
-		this.dni = dni;
+
+    public abstract double calcularMonto(double auxMonto);
+
+    public double calcularMontoTotalLlamadas() {
+        return getLlamadas().stream()
+                .mapToDouble(llamada -> {
+                    double auxMonto = 0;
+                    auxMonto = llamada.calcularMonto(auxMonto);
+                    return calcularMonto(auxMonto);
+                })
+                .sum();
+    }
+
+	public void agregarLlamada(Llamada llamada) {
+		getLlamadas().add(llamada);
 	}
 }
