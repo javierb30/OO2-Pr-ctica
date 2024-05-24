@@ -56,10 +56,10 @@ class EmpresaTest {
 		// por defecto es el ultimo
 		assertEquals("2214444559", this.sistema.obtenerNumeroLibre());
 
-		this.sistema.getGuia().cambiarTipoGenerador("primero");
+		this.sistema.getGuia().cambiarTipoGenerador(new PrimeroGenerador());
 		assertEquals("2214444554", this.sistema.obtenerNumeroLibre());
 
-		this.sistema.getGuia().cambiarTipoGenerador("random");
+		this.sistema.getGuia().cambiarTipoGenerador(new RandomGenerador());
 		assertNotNull(this.sistema.obtenerNumeroLibre());
 	}
 }

@@ -1053,3 +1053,264 @@ public void agregarLlamada(Llamada llamada) {
 		getLlamadas().add(llamada);
 	}
 ```
+
+1. **Mal olor:** Código dúplicado en método calcularMonto(...) de las subclases de Llamada
+
+2. **Código a modificar:**
+```java
+//Clase LlamadaNacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 3 pesos por segundo más IVA sin adicional por establecer la llamada
+		auxMonto += getDuracion() * 3 + (getDuracion() * 3 * 0.21);
+		return auxMonto;
+	}
+//Clase LlamadaInternacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 150 pesos por segundo más IVA más 50 pesos por establecer la llamada
+		auxMonto += getDuracion() * 150 + (getDuracion() * 150 * 0.21) + 50;
+		return auxMonto;
+	}
+```
+
+3. **Refactoring:** Extract Method y Pull Up Method
+
+
+4. **Resultado:** 
+```java
+//Clase Llamada
+	public double ivaAdicional(double precioPorSegundo) {
+		return montoBase(precioPorSegundo) * 0.21;
+	}
+
+	public double montoBase(double precioPorSegundo) {
+		return getDuracion() * precioPorSegundo;
+	}
+//Clase LlamadaNacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 3 pesos por segundo más IVA sin adicional por establecer la llamada
+		auxMonto += this.montoBase(3) + this.ivaAdicional(3);
+		return auxMonto;
+	}
+//Clase LlamadaInternacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 150 pesos por segundo más IVA más 50 pesos por establecer la llamada
+		auxMonto += this.montoBase(150) + this.ivaAdicional(150) + 50;
+		return auxMonto;
+	}
+```
+
+1. **Mal olor:** El uso de números literales o constantes sin una explicación clara dificulta la comprensión del código y lo hace menos mantenible.
+
+2. **Código a modificar:**
+```java
+//Clase Llamada
+public double ivaAdicional(double precioPorSegundo) {
+		return montoBase(precioPorSegundo) * 0.21;
+	}
+//Clase LlamadaNacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 3 pesos por segundo más IVA sin adicional por establecer la llamada
+		auxMonto += this.montoBase(3) + this.ivaAdicional(3);
+		return auxMonto;
+	}
+//Clase LlamadaInternacional
+public double calcularMonto(double auxMonto) {
+		// el precio es de 150 pesos por segundo más IVA más 50 pesos por establecer la llamada
+		auxMonto += this.montoBase(150) + this.ivaAdicional(150) + 50;
+		return auxMonto;
+	}
+```
+
+3. **Refactoring:** Replace Magic Literal
+
+
+4. **Resultado:** 
+```java
+//Clase Llamada
+private static final double PRECIOIVA = 0.21;
+public double ivaAdicional(double precioPorSegundo) {
+		return montoBase(precioPorSegundo) * PRECIOIVA;
+	}
+//Clase LlamadaInternacional
+private static final int PRECIOPORSEGUNDO = 150;
+private static final int PRECIOEXTRA = 50;
+public double calcularMonto(double auxMonto) {
+    auxMonto += this.montoBase(PRECIOPORSEGUNDO) + this.ivaAdicional(PRECIOPORSEGUNDO) + PRECIOEXTRA;
+    return auxMonto;
+}
+//Clase LlamadaNacional
+private static final int PRECIOPORSEGUNDO = 3;
+public double calcularMonto(double auxMonto) {
+    auxMonto += this.montoBase(PRECIOPORSEGUNDO) + this.ivaAdicional(PRECIOPORSEGUNDO);
+    return auxMonto;
+}
+```
+
+1. **Mal olor:** Continuamos con código dúplicado en los métodos, entonces obtenemos los get correspondientes para la constante PRECIOPORSEGUNDO y subimos el getter a la superclase como abstracto 
+
+2. **Código a modificar:**
+
+3. **Refactoring:** Encapsulate Field, Pull Up Method
+
+
+4. **Resultado:** 
+```java
+//Clase Llamada
+public abstract int getPrecioporsegundo();
+//Clase LlamadaNacional
+public int getPrecioporsegundo() {
+		return PRECIOPORSEGUNDO;
+	}
+//Clase LlamadaInternacional
+public int getPrecioporsegundo() {
+		return PRECIOPORSEGUNDO;
+	}
+```
+Cada constante retorna un valor diferente y en eso difieren los metodos de cada subclase.
+
+1. **Mal olor:** Continuamos con el código dúplicado de los métodos calcularMonto(...)
+
+2. **Código a modificar:**
+```java
+//Clase Llamada
+public abstract double calcularMonto(double auxMonto);
+//Clase LlamadaNacional
+public double calcularMonto(double auxMonto) {
+		auxMonto += this.montoBase(getPrecioporsegundo()) + this.ivaAdicional(getPrecioporsegundo());
+		return auxMonto;
+	}
+//Clase LlamadaInternacional
+public double calcularMonto(double auxMonto) {
+		auxMonto += this.montoBase(getPrecioporsegundo()) + this.ivaAdicional(getPrecioporsegundo()) + PRECIOEXTRA;
+		return auxMonto;
+	}
+```
+3. **Refactoring:** Pull up Method (se reemplaza el método abstracto de la clase Llamada por el concreto) y Form Template Method
+
+4. **Resultado:** 
+```java
+//Clase Llamada
+public double calcularMonto(double auxMonto) {
+		auxMonto += this.montoBase(getPrecioporsegundo()) + this.ivaAdicional(getPrecioporsegundo());
+		return auxMonto;
+	}
+//Clase LlamadaNacional
+
+//Clase LlamadaInternacional
+public double calcularMonto(double auxMonto) {
+		return super.calcularMonto(auxMonto) + PRECIOEXTRA;
+	}
+```
+
+1. **Mal olor:** Switch statements en método obtenerNumeroLibre() de la clase GestorNumerosDisponibles
+
+2. **Código a modificar:**
+```java
+public class GestorNumerosDisponibles {
+	private SortedSet<String> lineas = new TreeSet<String>();
+	private String tipoGenerador = "ultimo";
+
+	public SortedSet<String> getLineas() {
+		return lineas;
+	}
+
+	public String obtenerNumeroLibre() {
+		String linea;
+		switch (tipoGenerador) {
+			case "ultimo":
+				linea = lineas.last();
+				lineas.remove(linea);
+				return linea;
+			case "primero":
+				linea = lineas.first();
+				lineas.remove(linea);
+				return linea;
+			case "random":
+				linea = new ArrayList<String>(lineas)
+						.get(new Random().nextInt(lineas.size()));
+				lineas.remove(linea);
+				return linea;
+		}
+		return null;
+	}
+
+	public void cambiarTipoGenerador(String tipo) {
+		this.tipoGenerador = tipo;
+	}
+}
+//Test
+@Test
+	void obtenerNumeroLibre() {
+		// por defecto es el ultimo
+		assertEquals("2214444559", this.sistema.obtenerNumeroLibre());
+
+		this.sistema.getGuia().cambiarTipoGenerador("primero");
+		assertEquals("2214444554", this.sistema.obtenerNumeroLibre());
+
+		this.sistema.getGuia().cambiarTipoGenerador("random");
+		assertNotNull(this.sistema.obtenerNumeroLibre());
+	}
+```
+3. **Refactoring:** replace conditional with strategy. También provoca modificaciones en los tests
+
+4. **Resultado:** 
+```java
+public class GestorNumerosDisponibles {
+	private SortedSet<String> lineas = new TreeSet<String>();
+	private NumeroGenerador tipoGenerador;
+	
+	public GestorNumerosDisponibles() {
+        this.tipoGenerador = new UltimoGenerador(); //Por defecto utiliza el último como se indica en el test provisto
+    }
+	
+	public SortedSet<String> getLineas() {
+		return lineas;
+	}
+
+	public String obtenerNumeroLibre() {
+		return this.tipoGenerador.obtenerNumeroLibre(lineas);
+	}
+
+	public void cambiarTipoGenerador(NumeroGenerador tipoGenerador) {
+		this.tipoGenerador = tipoGenerador;
+	}
+}
+//Nuevas Clases creadas por aplicar Strategy
+public interface NumeroGenerador {
+	public String obtenerNumeroLibre(SortedSet<String> lineas);
+}
+public class UltimoGenerador implements NumeroGenerador{
+	public String obtenerNumeroLibre(SortedSet<String> lineas) {
+		String linea = lineas.last();
+        lineas.remove(linea);
+        return linea;
+	}
+}
+public class PrimeroGenerador implements NumeroGenerador{
+	public String obtenerNumeroLibre(SortedSet<String> lineas) {
+		String linea = lineas.first();
+		lineas.remove(linea);
+		return linea;
+	}
+}
+public class RandomGenerador implements NumeroGenerador{
+	public String obtenerNumeroLibre(SortedSet<String> lineas) {
+		String linea = new ArrayList<String>(lineas)
+				.get(new Random().nextInt(lineas.size()));
+		lineas.remove(linea);
+		return linea;
+	}
+}
+//Test
+@Test
+	void obtenerNumeroLibre() {
+		// por defecto es el ultimo
+		assertEquals("2214444559", this.sistema.obtenerNumeroLibre());
+
+		this.sistema.getGuia().cambiarTipoGenerador(new PrimeroGenerador());
+		assertEquals("2214444554", this.sistema.obtenerNumeroLibre());
+
+		this.sistema.getGuia().cambiarTipoGenerador(new RandomGenerador());
+		assertNotNull(this.sistema.obtenerNumeroLibre());
+	}
+```

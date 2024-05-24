@@ -1,6 +1,8 @@
 package ar.edu.unlp.info.oo2.Ejericicio3_FacturacionDeLlamadas_Refactorizado;
 
 public abstract class Llamada {
+	private static final double PRECIOIVA = 0.21;
+	
 	private String origen;
 	private String destino;
 	private int duracion;
@@ -10,7 +12,9 @@ public abstract class Llamada {
 		this.destino= destino;
 		this.duracion = duracion;
 	}
-
+	
+	public abstract int getPrecioporsegundo();
+	
 	public String getDestino() {
 		return destino;
 	}
@@ -22,6 +26,17 @@ public abstract class Llamada {
 	public String getOrigen() {
 		return origen;
 	}
+
+	public double ivaAdicional(double precioPorSegundo) {
+		return montoBase(precioPorSegundo) * PRECIOIVA;
+	}
+
+	public double montoBase(double precioPorSegundo) {
+		return getDuracion() * precioPorSegundo;
+	}
 	
-	public abstract double calcularMonto(double auxMonto);
+	public double calcularMonto(double auxMonto) {
+		auxMonto += this.montoBase(getPrecioporsegundo()) + this.ivaAdicional(getPrecioporsegundo());
+		return auxMonto;
+	}
 }
